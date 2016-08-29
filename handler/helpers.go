@@ -70,7 +70,7 @@ func renderHTML(w http.ResponseWriter, r *http.Request, task types.EremeticTask,
 
 	data := make(map[string]interface{})
 	funcMap := template.FuncMap{
-		"ToLower":    strings.ToLower,
+		"ToLower":    formatter.ToLower,
 		"FormatTime": formatter.FormatTime,
 	}
 
