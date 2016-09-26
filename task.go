@@ -73,6 +73,7 @@ type Task struct {
 	TaskCPUs          float64           `json:"task_cpus"`
 	TaskMem           float64           `json:"task_mem"`
 	Command           string            `json:"command"`
+	Args              []string          `json:"args"`
 	User              string            `json:"user"`
 	Environment       map[string]string `json:"env"`
 	MaskedEnvironment map[string]string `json:"masked_env"`

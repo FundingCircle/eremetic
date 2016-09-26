@@ -1,6 +1,8 @@
 package mesos
 
 import (
+	"strings"
+
 	"github.com/gogo/protobuf/proto"
 	"github.com/klarna/eremetic"
 	"github.com/mesos/mesos-go/mesosproto"
@@ -155,9 +157,15 @@ func buildCommandInfo(task eremetic.Task) *mesosproto.CommandInfo {
 	}
 
 	if task.Command != "" {
+		commandInfo.Shell = proto.Bool(true)
 		commandInfo.Value = &task.Command
 	} else {
 		commandInfo.Shell = proto.Bool(false)
+
+		if task.Args != nil {
+			foo := strings.Join(task.Args, " ")
+			commandInfo.Value = &foo
+		}
 	}
 
 	return commandInfo
