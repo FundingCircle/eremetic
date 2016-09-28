@@ -1,9 +1,9 @@
 .PHONY: all test test-server test-docker docker docker-clean publish-docker
 
 REPO=github.com/klarna/eremetic
-VERSION?=$(shell git describe HEAD | sed s/^v//)
+VERSION?=latest
 DATE?=$(shell date -u '+%Y-%m-%d_%H:%M:%S')
-DOCKERNAME?=alde/eremetic
+DOCKERNAME?=mongey/eremetic
 DOCKERTAG?=${DOCKERNAME}:${VERSION}
 LDFLAGS=-X ${REPO}/version.Version=${VERSION} -X ${REPO}/version.BuildDate=${DATE}
 TOOLS=${GOPATH}/bin/go-bindata \

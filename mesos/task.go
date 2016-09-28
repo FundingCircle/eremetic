@@ -20,12 +20,26 @@ func createTaskInfo(task eremetic.Task, offer *mesosproto.Offer) (eremetic.Task,
 
 	portMapping, portResources := buildPorts(task, offer)
 	env := buildEnvironment(task, portMapping)
+	var executor *mesosproto.ExecutorInfo
+	cmd := buildCommandInfo(task, env)
 
+	//if task.Args != nil && len(task.Args) != 0 {
+	//fmt.Println("Doing some funky stuff")
+	//r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	//executor = mesosproto.NewPopulatedExecutorInfo()
+	//executor.Container = cmd
+	//cmd = nil
+	//}
+	fmt.Println("=EXEC=========")
+	fmt.Println(executor)
+	fmt.Println("====CMD======")
+	fmt.Println(cmd)
 	taskInfo := &mesosproto.TaskInfo{
-		TaskId:  &mesosproto.TaskID{Value: proto.String(task.ID)},
-		SlaveId: offer.SlaveId,
-		Name:    proto.String(task.Name),
-		Command: buildCommandInfo(task, env),
+		TaskId:   &mesosproto.TaskID{Value: proto.String(task.ID)},
+		SlaveId:  offer.SlaveId,
+		Name:     proto.String(task.Name),
+		Command:  cmd,
+		Executor: executor,
 		Container: &mesosproto.ContainerInfo{
 			Type: mesosproto.ContainerInfo_DOCKER.Enum(),
 			Docker: &mesosproto.ContainerInfo_DockerInfo{
@@ -172,9 +186,12 @@ func buildCommandInfo(task eremetic.Task, env *mesosproto.Environment) *mesospro
 	}
 
 	if task.Command != "" {
+		fmt.Println("task.Command is not empty")
+		commandInfo.Shell = proto.Bool(true)
 		commandInfo.Value = &task.Command
 	} else {
 		commandInfo.Shell = proto.Bool(false)
+		commandInfo.Arguments = task.Args
 	}
 
 	return commandInfo

@@ -1,0 +1,23 @@
+{
+  "id": "/eremetic",
+  "cpus": 0.2,
+  "mem": 100.0,
+  "instances": 1,
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "image": "mongey/eremetic",
+      "network": "BRIDGE",
+      "forcePullImage": true,
+      "portMappings": [
+        { "containerPort": 8000, "hostPort": 0, "name": "http" },
+        { "containerPort": 0, "hostPort": 0 }
+      ]
+    }
+  },
+  "env": {
+    "MASTER": "zk://zookeeper.service.consul/mesos",
+    "ADDRESS": "0.0.0.0",
+    "PORT": "8000"
+  }
+}

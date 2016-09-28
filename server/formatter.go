@@ -13,3 +13,7 @@ func FormatTime(unixTime int64) string {
 
 	return fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d", year, month, day, t.Hour(), t.Minute(), t.Second())
 }
+
+//func ToLower(state types.TaskState) string {
+//return strings.ToLower(string(state))
+//}
