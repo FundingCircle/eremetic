@@ -2,12 +2,15 @@ package mesos
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net"
+	"net/http"
 	"strings"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
+	"github.com/hashicorp/consul/api"
 	"github.com/mesos/mesos-go/api/v0/auth"
 	"github.com/mesos/mesos-go/api/v0/mesosproto"
 	mesossched "github.com/mesos/mesos-go/api/v0/scheduler"
@@ -63,10 +66,50 @@ func getAuthContext(ctx context.Context) context.Context {
 	return auth.WithLoginProvider(ctx, "SASL")
 }
 
+func getIPAddressFromConsul(hostname string) (net.IP, error) {
+	client, err := api.NewClient(&api.Config{
+		Address:    "consul.service.consul:8500",
+		Scheme:     "http",
+		HttpClient: http.DefaultClient,
+	})
+
+	if err != nil {
+		fmt.Println("Error with consul client")
+		fmt.Println(err)
+		return nil, err
+	}
+	catalog := client.Catalog()
+	nodes, meta, err := catalog.Nodes(nil)
+	if err != nil {
+		fmt.Println("Error with consul nodes")
+		fmt.Println(meta)
+		fmt.Println(err)
+		return nil, err
+	}
+	for _, n := range nodes {
+		fmt.Println("Node")
+		fmt.Println(n.Node)
+		fmt.Println("Address")
+		fmt.Println(n.Address)
+		if n.Node == hostname {
+			return net.ParseIP(n.Address), nil
+		}
+	}
+	err = errors.New("couldn't find in consul")
+
+	return nil, err
+}
+
 func createDriver(scheduler *Scheduler, settings *Settings) (*mesossched.MesosSchedulerDriver, error) {
 	publishedAddr := net.ParseIP(settings.MessengerAddress)
 	bindingPort := settings.MessengerPort
 	credential, err := getCredential(settings)
+
+	consulIP, err := getIPAddressFromConsul(settings.MessengerAddress)
+	fmt.Println("Setting up mesos shite")
+	fmt.Println("Setting: ", settings.MessengerAddress)
+	fmt.Println("Setting: ", publishedAddr)
+	fmt.Println("Consul:", consulIP)
 
 	if err != nil {
 		return nil, err
@@ -80,12 +123,14 @@ func createDriver(scheduler *Scheduler, settings *Settings) (*mesossched.MesosSc
 			User:            proto.String(settings.User),
 			Checkpoint:      proto.Bool(settings.Checkpoint),
 			FailoverTimeout: proto.Float64(settings.FailoverTimeout),
+			Hostname:        proto.String(settings.MessengerAddress),
 			Principal:       getPrincipalID(credential),
 		},
 		Scheduler:        scheduler,
 		BindingAddress:   net.ParseIP("0.0.0.0"),
-		PublishedAddress: publishedAddr,
+		PublishedAddress: consulIP,
 		BindingPort:      bindingPort,
+		HostnameOverride: settings.MessengerAddress,
 		Credential:       credential,
 		WithAuthContext:  getAuthContext,
 	})
