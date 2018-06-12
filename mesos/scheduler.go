@@ -345,6 +345,7 @@ func (s *Scheduler) ScheduleTask(request eremetic.Request) (string, error) {
 		"command":           request.Command,
 		"agent_constraints": request.AgentConstraints,
 		"ports":             request.Ports,
+		"uris":              request.URIs,
 	}).Debug("Adding task to queue")
 
 	if request.Name == "" {

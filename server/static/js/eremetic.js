@@ -224,7 +224,7 @@ $(document).ready(function() {
 
     function addURIs(e) {
     var   $cont = $('#uris')
-        , index = $cont.data('count') + 1
+        , index = $cont.data('count')
         , $input
         ;
 
@@ -233,7 +233,7 @@ $(document).ready(function() {
     $input = $(
       '<div class="field ui action input uri">' +
         '<div class="field">' +
-          '<input name="uri_' + index + '" placeholder="URI"/>' +
+          '<input name="fetch[' + index + '][uri]" placeholder="URI"/>' +
         '</div>' +
         '&nbsp;<button class="ui icon button">' +
           '<i class="minus red icon"></i>' +

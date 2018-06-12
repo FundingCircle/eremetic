@@ -135,6 +135,12 @@ type RequestV1 struct {
 // RequestFromV1 is needed for Go versions < 1.8
 // In go 1.8, Request(RequestV1) would work instead
 func RequestFromV1(req RequestV1) eremetic.Request {
+	uris := []string{}
+
+	for _, f := range req.Fetch {
+		uris = append(uris, f.URI)
+	}
+
 	return eremetic.Request{
 		TaskCPUs:          req.TaskCPUs,
 		TaskMem:           req.TaskMem,
@@ -152,7 +158,7 @@ func RequestFromV1(req RequestV1) eremetic.Request {
 		Labels:            req.Labels,
 		AgentConstraints:  req.AgentConstraints,
 		CallbackURI:       req.CallbackURI,
-		URIs:              []string{},
+		URIs:              uris,
 		Fetch:             req.Fetch,
 		ForcePullImage:    req.ForcePullImage,
 		Privileged:        req.Privileged,

@@ -55,6 +55,7 @@ func (h Handler) AddTask(conf *config.Config, apiVersion string) http.HandlerFun
 		switch apiVersion {
 		case api.V0:
 			deprecated(w)
+			logrus.Info("This is a v0 task")
 			var req api.RequestV0
 			err = json.Unmarshal(body, &req)
 			request = api.RequestFromV0(req)
@@ -64,6 +65,8 @@ func (h Handler) AddTask(conf *config.Config, apiVersion string) http.HandlerFun
 				return
 			}
 		case api.V1:
+			logrus.Info("This is a v1 task")
+			logrus.Info(string(body[:]))
 			var req api.RequestV1
 			err = json.Unmarshal(body, &req)
 			request = api.RequestFromV1(req)
