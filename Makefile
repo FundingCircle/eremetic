@@ -13,7 +13,7 @@ SRC=$(shell find . -name '*.go')
 STATIC=$(shell find server/static server/templates)
 TESTFLAGS="-v"
 
-DOCKER_GO_SRC_PATH=/go/src/github.com/Mongey/eremetic
+DOCKER_GO_SRC_PATH=/go/src/github.com/eremetic-framework/eremetic
 DOCKER_GOLANG_RUN_CMD=docker run --rm -v "$(PWD)":$(DOCKER_GO_SRC_PATH) -w $(DOCKER_GO_SRC_PATH) golang:1.6 bash -c
 
 PACKAGES=$(shell go list ./... | grep -v /vendor/)
@@ -48,15 +48,15 @@ lint:
 	golint -set_exit_status $(shell go list ./... | grep -v /vendor/ | grep -v assets)
 
 server/assets/assets.go: server/generate.go ${STATIC}
-	go generate github.com/Mongey/eremetic/server
+	go generate github.com/eremetic-framework/eremetic/server
 
 eremetic: ${TOOLS} server/assets/assets.go
 eremetic: ${SRC}
-	go build -ldflags "${LDFLAGS}" -o $@ github.com/Mongey/eremetic/cmd/eremetic
+	go build -ldflags "${LDFLAGS}" -o $@ github.com/eremetic-framework/eremetic/cmd/eremetic
 
 docker/eremetic: ${TOOLS} server/assets/assets.go
 docker/eremetic: ${SRC}
-	CGO_ENABLED=0 GOOS=linux go build -ldflags "${LDFLAGS}" -a -installsuffix cgo -o $@ github.com/Mongey/eremetic/cmd/eremetic
+	CGO_ENABLED=0 GOOS=linux go build -ldflags "${LDFLAGS}" -a -installsuffix cgo -o $@ github.com/eremetic-framework/eremetic/cmd/eremetic
 
 docker: docker/eremetic docker/Dockerfile docker/marathon.sh
 	docker build -t ${DOCKERTAG} docker
