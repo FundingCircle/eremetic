@@ -1,9 +1,8 @@
-FROM alpine:3.2
-
-RUN mkdir -p /opt/eremetic
-
-COPY eremetic /opt/eremetic/eremetic
-COPY marathon.sh /marathon.sh
+FROM alpine:3.8
 
 WORKDIR /opt/eremetic
+
+COPY eremetic ./
+COPY marathon.sh /
+
 CMD [ "/marathon.sh" ]
