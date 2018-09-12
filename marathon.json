@@ -6,7 +6,7 @@
   "container": {
     "type": "DOCKER",
     "docker": {
-      "image": "mongey/eremetic",
+      "image": "quay.io/fundingcircle/eremetic",
       "network": "BRIDGE",
       "forcePullImage": true,
       "portMappings": [
